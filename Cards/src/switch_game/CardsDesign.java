@@ -31,7 +31,9 @@ public class CardsDesign extends JFrame
 	ArrayList<Integer>storeUsedCards = new ArrayList<Integer>();
 	
 	Card currentCard;
-	JPanel[] getP;
+	JPanel[] getA;
+	JPanel[] getB;
+	
 
 	CardDeck cd=new CardDeck();
 
@@ -41,10 +43,21 @@ public class CardsDesign extends JFrame
 	boolean mousePressedPlayerA;
 	boolean mousePressedPlayerB;
 	
-	int x=300;
-	int y=250;
-	int sizeX=80;
-	int sizeY = 100;
+	
+	//TODO 
+	boolean playerATurn=true;
+	boolean playerBTurn=false;
+	
+	int numCardsDrawn;
+	
+	JButton endPlayerATurn;
+	JButton endPlayerBTurn;
+	//TODO
+	
+	int x;
+	int y;
+	int sizeX;
+	int sizeY;
 	
 	JPanel dummPanel = new JPanel();
 	
@@ -58,17 +71,19 @@ public class CardsDesign extends JFrame
 		for(int i=0; i<52; i++)
 			availableCards.add(i);
 	
-		ImageIcon ic = new ImageIcon("imgs/draw.png");
-		JButton drawSingleCardButton = new JButton(ic);
-		drawSingleCardButton.setBounds(10, 170, 30, 100);
-		drawSingleCardButton.addActionListener(new ActionListener() {
+		ImageIcon ic1 = new ImageIcon("imgs/draw.png");
+		JButton playADrawCard = new JButton(ic1);
+		playADrawCard.setBounds(20, 170, 30, 100);
+		playADrawCard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{			
 				if(availableCards.size()>0)
 				{
-					deckAnimation(ct);
-					gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerACards, availableCards, getP, ct, cd);	
 					x=300;y=250;sizeX=80;sizeY=100;
+					deckAnimation(ct, 1);
+					gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerACards, availableCards, getA, ct, cd, 1);	
+					playerATurn=false;
+					playerBTurn=true;
 				}
 				else
 				{
@@ -78,12 +93,34 @@ public class CardsDesign extends JFrame
 			}
 		});
 		
+		ImageIcon ic2 = new ImageIcon("imgs/draw2.png");
+		JButton playBDrawCard = new JButton(ic2);
+		playBDrawCard.setBounds(630, 170, 30, 100);
+		playBDrawCard.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{			
+				if(availableCards.size()>0)
+				{
+					x=300;y=250;sizeX=80;sizeY=100;
+					deckAnimation(ct, 2);
+					gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerBCards, availableCards, getB, ct, cd, 2);
+					playerATurn=true;
+					playerBTurn=false;
+				}
+				else
+				{
+					availableCards = gameRules.reloadEmptyDeck(availableCards, storeUsedCards);
+				}
+			}
+		});
+
 		startingCard(ct);
 		setPlayerACards(ct);
 		setPlayerBCards(ct);
 		remainingDeck(ct);
-		
-		ct.add(drawSingleCardButton);
+	
+		ct.add(playADrawCard);
+		ct.add(playBDrawCard);
 		ct.add(startingCardPanel);
 	
 		setVisible(true);
@@ -98,7 +135,7 @@ public class CardsDesign extends JFrame
 		{
 			public void mousePressed(MouseEvent e)
 			{
-				if(playerCard.getX()==50)
+				if(playerCard.getX()==50 && playerATurn)
 				{
 					if(gameRules.matchSuit(cd.getPlayerACards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerACards(panelNumber), currentCard))
 					{
@@ -110,7 +147,7 @@ public class CardsDesign extends JFrame
 						mousePressedPlayerA=true;
 					}
 				}
-				else if(playerCard.getX()==550)
+				else if(playerCard.getX()==550 && playerBTurn)
 				{
 					if(gameRules.matchSuit(cd.getPlayerBCards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
 					{
@@ -137,6 +174,8 @@ public class CardsDesign extends JFrame
 						ct.repaint();
 						ct.revalidate();
 						mousePressedPlayerA=false;
+						playerATurn=false;
+						playerBTurn=true;
 					}
 				}
 				else if(mousePressedPlayerB)
@@ -151,6 +190,8 @@ public class CardsDesign extends JFrame
 						ct.repaint();
 						ct.revalidate();
 						mousePressedPlayerB=false;
+						playerATurn=true;
+						playerBTurn=false;
 					}
 				}
 			}
@@ -195,7 +236,7 @@ public class CardsDesign extends JFrame
 			cd.addPlayerACards(cardIndex);
 			playerACards[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			playerACards[i].addMouseListener(enlargePanel(playerACards, playerACards[i], i, cardPosition, "playerA", ct));
-			getP=playerACards;
+			getA=playerACards;
 			availableCards.remove(currentIndex);
 			cardPosition+=50;
 			ct.add(playerACards[i]);
@@ -221,11 +262,12 @@ public class CardsDesign extends JFrame
 			storeIndexOfPlayerBCards.add(cardIndex);
 			playerBCards[i] = new JPanel(new BorderLayout());
 			playerBCards[i].setBounds(550, cardPosition, 80, 100);
-			playerBCards[i].add(cd.createDeckOfCardsBack().get(cardIndex));
-			//playerBCards[i].add(cd.createDeckOfCardsFront().get(cardIndex));
+			//playerBCards[i].add(cd.createDeckOfCardsBack().get(cardIndex));
+			playerBCards[i].add(cd.createDeckOfCardsFront().get(cardIndex));
 			cd.addPlayerBCards(cardIndex);
 			playerBCards[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			playerBCards[i].addMouseListener(enlargePanel(playerBCards, playerBCards[i], i, cardPosition, "playerB", ct));
+			getB=playerBCards;
 			availableCards.remove(currentIndex);
 			cardPosition+=50;
 			ct.add(playerBCards[i]);
@@ -285,12 +327,14 @@ public class CardsDesign extends JFrame
 			{
 				playerCards[i].setBounds(50, cardPosition, 80, 100);
 				playerCards[i].add(cd.createDeckOfCardsFront().get(cardIndex));
-				getP=playerCards;
+				getA=playerCards;
 			}
-			else 
+			else if(player.equals("playerB"))
 			{
 				playerCards[i].setBounds(550, cardPosition, 80, 100);
-				playerCards[i].add(cd.createDeckOfCardsBack().get(cardIndex));
+				//playerCards[i].add(cd.createDeckOfCardsBack().get(cardIndex));
+				playerCards[i].add(cd.createDeckOfCardsFront().get(cardIndex));
+				getB=playerCards;
 			}
 			playerCards[i].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			playerCards[i].addMouseListener(enlargePanel(playerCards, playerCards[i], i, cardPosition, player, ct));
@@ -299,23 +343,42 @@ public class CardsDesign extends JFrame
 			ct.setComponentZOrder(playerCards[i], 0);
 		}
 	}
-	void deckAnimation(Container ct)
+	void deckAnimation(Container ct, int key)
 	{
 		ActionListener taskPerformer = new ActionListener() { 
 			public void actionPerformed(ActionEvent evt)
 			{ 
-				if(x != 120)
+				if(key==1)
 				{
-					dummPanel.add(cd.createDeckOfCardsBack().get(0));
-					dummPanel.setBounds(x, y, sizeX, sizeY);
-					x-=30; y+=10;sizeX-=10;sizeY-=10;
-					ct.add(dummPanel);
-					ct.repaint();
-					ct.revalidate();
-					deckAnimation(ct);
-					
-					if(x==120)
-						ct.remove(dummPanel);
+					if(x != 120)
+					{
+						dummPanel.add(cd.createDeckOfCardsBack().get(0));
+						dummPanel.setBounds(x, y, sizeX, sizeY);
+						x-=18; y+=14;sizeX-=10;sizeY-=10;
+						ct.add(dummPanel);
+						ct.repaint();
+						ct.revalidate();
+						deckAnimation(ct, 1);
+						
+						if(x==120)
+							ct.remove(dummPanel);		
+					}
+				}
+				else if(key==2)
+				{
+					if(x != 580)
+					{
+						dummPanel.add(cd.createDeckOfCardsBack().get(0));
+						dummPanel.setBounds(x, y, sizeX, sizeY);
+						x+=28; y+=14;sizeX-=10;sizeY-=10;
+						ct.add(dummPanel);
+						ct.repaint();
+						ct.revalidate();
+						deckAnimation(ct, 2);
+						
+						if(x==580)
+							ct.remove(dummPanel);
+					}
 				}
 		    }};
 	    Timer timer = new Timer(1, taskPerformer);

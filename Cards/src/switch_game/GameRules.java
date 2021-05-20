@@ -27,7 +27,7 @@ public class GameRules
 		}
 		return res;	
 	}
-	void pickUpSingleCard(CardsDesign cs, ArrayList<Integer> storeIndexOfCards, ArrayList<Integer> availableCards, JPanel[] getP, Container ct, CardDeck cd)
+	void pickUpSingleCard(CardsDesign cs, ArrayList<Integer> storeIndexOfCards, ArrayList<Integer> availableCards, JPanel[] getP, Container ct, CardDeck cd, int p)
 	{
 		for(int i=0; i<storeIndexOfCards.size(); i++)
 			ct.remove(getP[i]);
@@ -35,9 +35,18 @@ public class GameRules
 		Random rand = new Random();
 		int num = rand.nextInt(availableCards.size());
 		storeIndexOfCards.add(availableCards.get(num));
-		cd.addPlayerACards(availableCards.get(num));
 		
-		cs.reorderPlayerCards(ct, "playerA", storeIndexOfCards);
+		if(p==1)
+		{
+			cs.reorderPlayerCards(ct, "playerA", storeIndexOfCards);
+			cd.addPlayerACards(availableCards.get(num));
+		}
+		else if(p==2)
+		{
+			cs.reorderPlayerCards(ct, "playerB", storeIndexOfCards);
+			cd.addPlayerBCards(availableCards.get(num));
+		}
+		
 		ct.repaint();
 		ct.revalidate();
 		availableCards.remove(num);
