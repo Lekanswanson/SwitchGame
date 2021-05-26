@@ -9,13 +9,16 @@ import javax.swing.JPanel;
 
 public class GameRules
 {
+	int cardsToPickUp=0;
+	
 	boolean matchSuit(Card playerCard, Card middleCard)
 	{
 		boolean res=false;
 		if(playerCard.getSuit().equals(middleCard.getSuit()))
-		{
 			res=true;
-		}
+		else if(playerCard.getRank().equals("J"))
+			res=true;
+		
 		return res;
 	}
 	boolean matchRank(Card playerCard, Card middleCard)
@@ -57,10 +60,70 @@ public class GameRules
 		availableCards=usedCards;
 		return availableCards;
 	}
+
+	void pickUpTwoCards(Card card, String player, ArrayList<Integer> playerCards, CardDeck cd, CardsDesign c, Container ct)
+	{
+		boolean res=false;
+
+		if(card==null)
+			res=false;
+		else if(card.getRank().equals("2"))
+		{
+			cardsToPickUp+=2;
+			for(int i=0; i<playerCards.size(); i++)
+			{
+				if(player.equals("playerA"))
+					if(cd.getPlayerACards(i).getRank().equals("2"))
+						res=true;
+				if(player.equals("playerB"))
+					if(cd.getPlayerBCards(i).getRank().equals("2"))
+						res=true;					
+			}
+		}
+		if(res==false)
+		{
+			for(int i=0; i<cardsToPickUp; i++)
+				c.drawTwoCards(ct, player);
+			cardsToPickUp=0;
+		}
+	}
 	
 	void pickUpMultipleCards()
 	{
-		
+//		else if(card.getRank().equals("A")&&card.getSuit().equals("Hearts"))
+//		{
+//			cardsToPickUp+=5;
+//			for(int i=0; i<playerCards.size(); i++)
+//			{
+//				if(player.equals("playerA"))
+//				{
+//					if(cd.getPlayerACards(i).getRank().equals("2")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
+//					{
+//						cardsToPickUp+=2;
+//						res=true;
+//					}
+//					else if(cd.getPlayerACards(i).getRank().equals("5")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
+//					{
+//						cardsToPickUp=0;
+//						res=true;
+//					}
+//				}
+//				
+//				if(player.equals("playerB"))
+//				{
+//					if(cd.getPlayerBCards(i).getRank().equals("2")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
+//					{
+//						cardsToPickUp+=2;
+//						res=true;
+//					}
+//					else if(cd.getPlayerBCards(i).getRank().equals("5")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
+//					{
+//						cardsToPickUp=0;
+//						res=true;
+//					}
+//				}
+//			}
+//		}
 	}
 	void reverseGameRotation()
 	{
