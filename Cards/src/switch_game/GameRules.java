@@ -50,6 +50,8 @@ public class GameRules
 			cd.addPlayerBCards(availableCards.get(num));
 		}
 		
+
+		
 		ct.repaint();
 		ct.revalidate();
 		availableCards.remove(num);
@@ -57,7 +59,11 @@ public class GameRules
 	ArrayList<Integer> reloadEmptyDeck(ArrayList<Integer> availableCards, ArrayList<Integer> usedCards)
 	{
 		System.out.println("Deck Empty, Reload......");
-		availableCards=usedCards;
+		
+		for(int i=0; i<usedCards.size(); i++)
+		{
+			availableCards.add(usedCards.get(i));
+		}
 		return availableCards;
 	}
 
@@ -88,48 +94,64 @@ public class GameRules
 		}
 	}
 	
-	void pickUpMultipleCards()
+	void pickUpMultipleCards(Card card, String player, ArrayList<Integer> playerCards, CardDeck cd, CardsDesign c, Container ct)
 	{
-//		else if(card.getRank().equals("A")&&card.getSuit().equals("Hearts"))
-//		{
-//			cardsToPickUp+=5;
-//			for(int i=0; i<playerCards.size(); i++)
-//			{
-//				if(player.equals("playerA"))
-//				{
-//					if(cd.getPlayerACards(i).getRank().equals("2")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
-//					{
-//						cardsToPickUp+=2;
-//						res=true;
-//					}
-//					else if(cd.getPlayerACards(i).getRank().equals("5")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
-//					{
-//						cardsToPickUp=0;
-//						res=true;
-//					}
-//				}
-//				
-//				if(player.equals("playerB"))
-//				{
-//					if(cd.getPlayerBCards(i).getRank().equals("2")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
-//					{
-//						cardsToPickUp+=2;
-//						res=true;
-//					}
-//					else if(cd.getPlayerBCards(i).getRank().equals("5")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
-//					{
-//						cardsToPickUp=0;
-//						res=true;
-//					}
-//				}
-//			}
-//		}
+		boolean res=false;
+
+		if(card==null)
+			res=false;
+		else if(card.getRank().equals("A")&&card.getSuit().equals("Hearts"))
+		{
+			cardsToPickUp+=5;
+			
+			for(int i=0; i<playerCards.size(); i++)
+			{
+				if(player.equals("playerA"))
+				{
+					if(cd.getPlayerACards(i).getRank().equals("2")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
+					{
+						res=true;
+					}
+					else if(cd.getPlayerACards(i).getRank().equals("5")&&cd.getPlayerACards(i).getSuit().equals("Hearts"))
+					{
+						res=true;
+					}
+				}
+				if(player.equals("playerB"))
+				{
+					if(cd.getPlayerBCards(i).getRank().equals("2")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
+					{
+						res=true;
+					}
+					else if(cd.getPlayerBCards(i).getRank().equals("5")&&cd.getPlayerBCards(i).getSuit().equals("Hearts"))
+					{
+						res=true;
+					}
+				}
+			}
+		}
+		else if(card.getRank().equals("5")&&card.getSuit().equals("Hearts"))
+		{
+			cardsToPickUp=0;
+			res=false;
+		}
+		if(res==false)
+		{
+			for(int i=0; i<cardsToPickUp; i++)
+				c.drawTwoCards(ct, player);
+			cardsToPickUp=0;
+		}
 	}
 	void reverseGameRotation()
 	{
 		
 	}
 	void blockCardPickUp()
+	{
+		
+	}
+	
+	void skipPlayerTurn()
 	{
 		
 	}

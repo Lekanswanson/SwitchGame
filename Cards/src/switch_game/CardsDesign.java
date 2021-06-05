@@ -57,6 +57,10 @@ public class CardsDesign extends JFrame
 	JButton endPlayerBTurn;
 	//TODO
 	
+	//TODO 
+		//Soft refactor tomorrow. Add four players and reposition-able cards
+	//TODO
+	
 	int x;
 	int y;
 	int sizeX;
@@ -84,24 +88,30 @@ public class CardsDesign extends JFrame
 				{
 					if(availableCards.size()>0)
 					{
+						
 						x=300;y=250;sizeX=80;sizeY=100;
 						deckAnimation(ct, 1);
 						gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerACards, availableCards, getA, ct, cd, 1);
 						
-	
+						
 						justDrawedAcard=true;
 
 						
 						gameRules.pickUpTwoCards(null, "playerA", storeIndexOfPlayerBCards, cd, CardsDesign.this, ct);
+						gameRules.pickUpMultipleCards(null, "playerA", storeIndexOfPlayerBCards, cd, CardsDesign.this, ct);
 						cardsPickedUp=gameRules.cardsToPickUp;
-						
+
 						playerATurn=false;
 						playerBTurn=true;
-						
 					}
 					else
 					{
+						System.out.println("Reloading Deck....");
 						availableCards = gameRules.reloadEmptyDeck(availableCards, storeUsedCards);
+						int i=0;
+						while(i != storeUsedCards.size())
+							storeUsedCards.remove(i);
+							
 					}
 				}
 			}
@@ -117,6 +127,7 @@ public class CardsDesign extends JFrame
 				{
 					if(availableCards.size()>0)
 					{
+												
 						x=300;y=250;sizeX=80;sizeY=100;
 						deckAnimation(ct, 2);
 						gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerBCards, availableCards, getB, ct, cd, 2);
@@ -126,20 +137,26 @@ public class CardsDesign extends JFrame
 						
 						
 						gameRules.pickUpTwoCards(null, "playerB", storeIndexOfPlayerACards, cd, CardsDesign.this, ct);
+						gameRules.pickUpMultipleCards(null, "playerB", storeIndexOfPlayerACards, cd, CardsDesign.this, ct);
 						cardsPickedUp=gameRules.cardsToPickUp;
-					
-						
+
 						playerATurn=true;
 						playerBTurn=false;
+						
+						System.out.println("Used cards: " + storeUsedCards.size());
+						System.out.println("Remaining cards: " + availableCards.size());
 					}
 					else
 					{
+						System.out.println("Reloading Deck....");
 						availableCards = gameRules.reloadEmptyDeck(availableCards, storeUsedCards);
+						int i=0;
+						while(i != storeUsedCards.size())
+							storeUsedCards.remove(i);
 					}
 				}
 			}
 		});
-
 		startingCard(ct);
 		setPlayerACards(ct);
 		setPlayerBCards(ct);
@@ -151,7 +168,7 @@ public class CardsDesign extends JFrame
 	
 		setVisible(true);
 		setTitle("Table");
-		setBounds(900, 300, 700, 500);
+		setBounds(900, 0, 700, 900);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
@@ -163,7 +180,7 @@ public class CardsDesign extends JFrame
 			{
 				try
 				{
-					if(!justDrawedAcard)
+					if(!justDrawedAcard)//!justPickeUp
 					{
 						if(playerBTurn && cd.getPlayerACards(panelNumber).getRank().equals(currentCard.getRank()))
 							playerATurn=true;
@@ -175,55 +192,92 @@ public class CardsDesign extends JFrame
 
 				if(playerCard.getX()==50 && playerATurn)
 				{
-					if(!currentCard.getRank().equals("2") || cardsPickedUp==0)
+					if(currentCard.getRank().equals("2") && cardsPickedUp>0)
 					{
-						if(gameRules.matchSuit(cd.getPlayerACards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerACards(panelNumber), currentCard))
-						{
-							currentCard=cd.getPlayerACards(panelNumber);
-							
-							justDrawedAcard=false;
-							
-													
-							
-							int index = storeIndexOfPlayerACards.get(panelNumber);
-							storeUsedCards.add(index);
-							startingCardPanel.add(playerCard);
-							cardLayout.next(startingCardPanel);
-							mousePressedPlayerA=true;
-						}
-					}
-					else
-					{
+						System.out.println("Cant Be Done");
 						if(gameRules.matchRank(cd.getPlayerACards(panelNumber), currentCard))
 						{
 							currentCard=cd.getPlayerACards(panelNumber);	
 							
 							justDrawedAcard=false;
 							
-					
+							int index = storeIndexOfPlayerACards.get(panelNumber);
 							
+							storeUsedCards.add(index);
+							
+							startingCardPanel.add(playerCard);
+							cardLayout.next(startingCardPanel);
+							mousePressedPlayerA=true;
+						}
+					}
+					else if(currentCard.getRank().equals("A")&&currentCard.getSuit().equals("Hearts") && cardsPickedUp>0)
+					{
+						System.out.println("Insulted");
+						if(cd.getPlayerACards(panelNumber).getRank().equals("5")&&cd.getPlayerACards(panelNumber).getSuit().equals("Hearts") || cd.getPlayerACards(panelNumber).getRank().equals("2")&&cd.getPlayerACards(panelNumber).getSuit().equals("Hearts"))
+						{
+							currentCard=cd.getPlayerACards(panelNumber);	
+							
+							justDrawedAcard=false;
 							
 							int index = storeIndexOfPlayerACards.get(panelNumber);
+							
 							storeUsedCards.add(index);
 							startingCardPanel.add(playerCard);
 							cardLayout.next(startingCardPanel);
 							mousePressedPlayerA=true;
 						}
 					}
+					else 
+					{							
+						if(gameRules.matchSuit(cd.getPlayerACards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerACards(panelNumber), currentCard))
+						{
+							currentCard=cd.getPlayerACards(panelNumber);
+							
+							justDrawedAcard=false;
+							
+							int index = storeIndexOfPlayerACards.get(panelNumber);
+							
+
+							storeUsedCards.add(index);
+							startingCardPanel.add(playerCard);
+							cardLayout.next(startingCardPanel);
+							mousePressedPlayerA=true;
+						}						
+					}
 				}
 				else if(playerCard.getX()==550 && playerBTurn)
 				{
-					if(!currentCard.getRank().equals("2") || cardsPickedUp==0)
+					if(currentCard.getRank().equals("2") && cardsPickedUp>0)
 					{
-						if(gameRules.matchSuit(cd.getPlayerBCards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
+						System.out.println("Cant Be Done");
+						if(gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
 						{
 							currentCard=cd.getPlayerBCards(panelNumber);
 							
 							justDrawedAcard=false;
-
-
+						
 				
 							int index = storeIndexOfPlayerBCards.get(panelNumber);
+							
+							
+							storeUsedCards.add(index);
+							startingCardPanel.add(cd.createDeckOfCardsFront().get(index));
+							cardLayout.next(startingCardPanel);
+							mousePressedPlayerB=true;
+						}
+					}
+					else if(currentCard.getRank().equals("A")&&currentCard.getSuit().equals("Hearts") && cardsPickedUp>0)
+					{
+						System.out.println("Insulted");
+						if(cd.getPlayerBCards(panelNumber).getRank().equals("5")&&cd.getPlayerBCards(panelNumber).getSuit().equals("Hearts") || cd.getPlayerBCards(panelNumber).getRank().equals("2")&&cd.getPlayerBCards(panelNumber).getSuit().equals("Hearts"))
+						{
+							currentCard=cd.getPlayerBCards(panelNumber);
+							
+							justDrawedAcard=false;
+							
+				
+							int index = storeIndexOfPlayerBCards.get(panelNumber);
+							
 							storeUsedCards.add(index);
 							startingCardPanel.add(cd.createDeckOfCardsFront().get(index));
 							cardLayout.next(startingCardPanel);
@@ -232,64 +286,63 @@ public class CardsDesign extends JFrame
 					}
 					else
 					{
-						if(gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
+						if(gameRules.matchSuit(cd.getPlayerBCards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
 						{
 							currentCard=cd.getPlayerBCards(panelNumber);
 							
 							justDrawedAcard=false;
-						
 							
-							
-
 				
 							int index = storeIndexOfPlayerBCards.get(panelNumber);
+		
+							
 							storeUsedCards.add(index);
 							startingCardPanel.add(cd.createDeckOfCardsFront().get(index));
 							cardLayout.next(startingCardPanel);
 							mousePressedPlayerB=true;
 						}
-					}
+					}	
 				}
 			}
 			public void mouseReleased(MouseEvent e)
 			{		
 				if(mousePressedPlayerA)
 				{
-					//if(gameRules.matchSuit(cd.getPlayerACards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerACards(panelNumber), currentCard))
-					//{							
-						for(int i=0; i<storeIndexOfPlayerACards.size(); i++)
-							ct.remove(remainingCards[i]);
-						storeIndexOfPlayerACards.remove(panelNumber);
-						cd.removePlayerACard(panelNumber);
-						reorderPlayerCards(ct, "playerA", storeIndexOfPlayerACards);
-						ct.repaint();
-						ct.revalidate();
-						mousePressedPlayerA=false;
-						playerATurn=false;
-						playerBTurn=true;
-						
+					for(int i=0; i<storeIndexOfPlayerACards.size(); i++)
+						ct.remove(remainingCards[i]);
+					storeIndexOfPlayerACards.remove(panelNumber);
+					cd.removePlayerACard(panelNumber);
+					reorderPlayerCards(ct, "playerA", storeIndexOfPlayerACards);
+					ct.repaint();
+					ct.revalidate();
+					mousePressedPlayerA=false;
+					playerATurn=false;
+					playerBTurn=true;
+					
+					if(currentCard.getRank().equals("2"))
 						gameRules.pickUpTwoCards(currentCard, "playerB", storeIndexOfPlayerBCards, cd, CardsDesign.this, ct);
-						cardsPickedUp=gameRules.cardsToPickUp;
-					//}
+					else
+						gameRules.pickUpMultipleCards(currentCard, "playerB", storeIndexOfPlayerBCards, cd, CardsDesign.this, ct);
+					cardsPickedUp=gameRules.cardsToPickUp;
 				}
 				else if(mousePressedPlayerB)
 				{
-					//if(gameRules.matchSuit(cd.getPlayerBCards(panelNumber), currentCard) || gameRules.matchRank(cd.getPlayerBCards(panelNumber), currentCard))
-					//{			
-						for(int i=0; i<storeIndexOfPlayerBCards.size(); i++)
-							ct.remove(remainingCards[i]);
-						storeIndexOfPlayerBCards.remove(panelNumber);
-						cd.removePlayerBCard(panelNumber);
-						reorderPlayerCards(ct, "playerB", storeIndexOfPlayerBCards);
-						ct.repaint();
-						ct.revalidate();
-						mousePressedPlayerB=false;
-						playerATurn=true;
-						playerBTurn=false;
-						
+					for(int i=0; i<storeIndexOfPlayerBCards.size(); i++)
+						ct.remove(remainingCards[i]);
+					storeIndexOfPlayerBCards.remove(panelNumber);
+					cd.removePlayerBCard(panelNumber);
+					reorderPlayerCards(ct, "playerB", storeIndexOfPlayerBCards);
+					ct.repaint();
+					ct.revalidate();
+					mousePressedPlayerB=false;
+					playerATurn=true;
+					playerBTurn=false;
+					
+					if(currentCard.getRank().equals("2"))
 						gameRules.pickUpTwoCards(currentCard, "playerA", storeIndexOfPlayerACards, cd, CardsDesign.this, ct);
-						cardsPickedUp=gameRules.cardsToPickUp;
-					//}
+					else
+						gameRules.pickUpMultipleCards(currentCard, "playerA", storeIndexOfPlayerACards, cd, CardsDesign.this, ct);
+					cardsPickedUp=gameRules.cardsToPickUp;
 				}
 			}
 			public void mouseClicked(MouseEvent e){}
@@ -324,8 +377,10 @@ public class CardsDesign extends JFrame
 		{
 			limit=availableCards.size();
 			cardIndex=randomIndex.nextInt(limit);
+			
 			currentIndex=cardIndex;
 			cardIndex=availableCards.get(cardIndex);
+			
 			storeIndexOfPlayerACards.add(cardIndex);
 			playerACards[i] = new JPanel(new BorderLayout());
 			playerACards[i].setBounds(50, cardPosition, 80, 100);
@@ -339,7 +394,6 @@ public class CardsDesign extends JFrame
 			ct.add(playerACards[i]);
 			ct.setComponentZOrder(playerACards[i], 0);
 		}
-
 	}
 	void setPlayerBCards(Container ct)
 	{
@@ -354,8 +408,11 @@ public class CardsDesign extends JFrame
 		{
 			limit=availableCards.size();
 			cardIndex=randomIndex.nextInt(limit);
+						
 			currentIndex=cardIndex;
 			cardIndex=availableCards.get(cardIndex);
+			
+			
 			storeIndexOfPlayerBCards.add(cardIndex);
 			playerBCards[i] = new JPanel(new BorderLayout());
 			playerBCards[i].setBounds(550, cardPosition, 80, 100);
@@ -483,18 +540,36 @@ public class CardsDesign extends JFrame
 	    timer.start(); 
 	}
 	
+	//Getting an error is pick up is more than available cards
 	void drawTwoCards(Container ct, String playerToPickUp)
 	{
 		if(playerToPickUp.equals("playerA"))
 		{
+			if(availableCards.size()==0)
+			{
+				availableCards = gameRules.reloadEmptyDeck(availableCards, storeUsedCards);	
+				int i=0;
+				while(i != storeUsedCards.size())
+					storeUsedCards.remove(i);	
+			}
+		
 			x=300;y=250;sizeX=80;sizeY=100;
 			deckAnimation(ct, 1);
 			gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerACards, availableCards, getA, ct, cd, 1);	
 			playerATurn=false;
 			playerBTurn=true;
+
 		}
 		else if(playerToPickUp.equals("playerB"))
 		{
+			if(availableCards.size()==0)
+			{
+				availableCards = gameRules.reloadEmptyDeck(availableCards, storeUsedCards);	
+				int i=0;
+				while(i != storeUsedCards.size())
+					storeUsedCards.remove(i);
+			}
+			
 			x=300;y=250;sizeX=80;sizeY=100;
 			deckAnimation(ct, 2);
 			gameRules.pickUpSingleCard(CardsDesign.this, storeIndexOfPlayerBCards, availableCards, getB, ct, cd, 2);
