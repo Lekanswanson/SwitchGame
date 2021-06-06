@@ -8,11 +8,11 @@ Implemented Featues;
 4. Game starting cards
 5. Players can match cards based on suit or rank
 6. Players play one card per turn
+7. First player to play all cards declared winner
 
 Features that are yet to be implemented;
 1. Resizable frame
 2. Main menu
 3. Player turn identifier
 4. More rules to be implemted
-5. First player to play all cards declared winner
-6. Refactoring
+5. Refactoring
